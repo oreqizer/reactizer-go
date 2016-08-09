@@ -1,12 +1,11 @@
 package main
 
 import (
-	"log"
-	"net/http"
+	"reactizer-go/server"
+	"reactizer-go/modules"
 )
 
 func main() {
-	log.Print("hello world")
-
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	modules.MountRoutes()
+	server.Start(":8080")
 }
