@@ -5,7 +5,21 @@ import (
 	"net/http"
 )
 
-var mux *http.ServeMux = http.NewServeMux()
+type Server struct {
+	Mux *http.ServeMux
+}
+
+func (s *Server) MountFunc(path string, fn http.HandlerFunc) {
+	s.Mux.HandleFunc(path, logger(fn))
+}
+
+func (s *Server) MountHandler(path string, handler http.Handler) {
+	s.MountFunc(path, handler.ServeHTTP)
+}
+
+func NewServer() *Server {
+	return &Server{ Mux: http.NewServeMux() }
+}
 
 func logger(fn http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -13,16 +27,4 @@ func logger(fn http.HandlerFunc) http.HandlerFunc {
 		fn(w, r)
 		log.Println("[server] response ended")
 	}
-}
-
-func Mount(path string, fn http.HandlerFunc) {
-	mux.HandleFunc(path, logger(fn))
-}
-
-func MountHandler(path string, handler http.Handler) {
-	Mount(path, handler.ServeHTTP)
-}
-
-func Start(addr string) {
-	log.Fatal(http.ListenAndServe(addr, mux))
 }
