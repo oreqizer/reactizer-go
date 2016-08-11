@@ -21,6 +21,12 @@ type todoHandler struct {
 }
 
 func (t *todoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	_, err := authorize(r, t.db)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+
 	rows, err := t.db.Query("SELECT * FROM todo")
 	if err != nil {
 		log.Print(err)
