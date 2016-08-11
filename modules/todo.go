@@ -21,7 +21,7 @@ type todoHandler struct {
 func (t *todoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	rows, err := t.db.Query("SELECT * FROM todo")
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 	defer rows.Close()
 
@@ -30,14 +30,14 @@ func (t *todoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		todo := &Todo{}
 		err := rows.Scan(&todo.Id, &todo.UserId, &todo.Text, &todo.Done)
 		if err != nil {
-			log.Fatal(err)
+			log.Print(err)
 		}
 		todos = append(todos, todo)
 	}
 
 	json, err := json.Marshal(todos)
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
