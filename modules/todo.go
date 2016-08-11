@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"log"
 	"encoding/json"
+	"github.com/nicksnyder/go-i18n/i18n"
 )
 
 type Todo struct {
@@ -18,6 +19,7 @@ type Todos []*Todo
 
 type todoHandler struct {
 	db *sql.DB
+	T i18n.TranslateFunc
 }
 
 func (t *todoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {

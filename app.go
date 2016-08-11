@@ -8,9 +8,12 @@ import (
 
 	"reactizer-go/server"
 	"reactizer-go/modules"
+	"reactizer-go/i18n"
 )
 
 func main() {
+	i18n.LoadTranslations()
+
 	server := server.NewServer()
 	db, err := sql.Open("postgres", "postgres://oreqizer@localhost/reactizer?sslmode=disable")
 	if err != nil {

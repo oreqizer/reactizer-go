@@ -3,6 +3,9 @@ package modules
 import (
 	"net/http"
 	"database/sql"
+
+	"github.com/nicksnyder/go-i18n/i18n"
+	"reactizer-go/config"
 )
 
 type Mountable interface {
@@ -20,4 +23,13 @@ func Register(mux Mountable, db *sql.DB) {
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain")
 	w.Write([]byte("This is an example server.\n"))
+}
+
+func getT(r *http.Request) (i18n.TranslateFunc, error) {
+	acceptLang := r.Header.Get("Accept-Language")
+	T, err := i18n.Tfunc(acceptLang, config.DefaultLanguage)
+	if err != nil {
+		return nil, err
+	}
+	return T, nil
 }
