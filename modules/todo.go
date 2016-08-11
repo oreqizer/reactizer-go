@@ -23,7 +23,6 @@ func (t *todoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	defer rows.Close()
 
 	todos := []*Todo{}
@@ -40,6 +39,7 @@ func (t *todoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(json)
 }
