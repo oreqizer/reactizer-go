@@ -2,6 +2,7 @@ package modules
 
 import (
 	"net/http"
+	"database/sql"
 )
 
 type Mountable interface {
@@ -9,9 +10,11 @@ type Mountable interface {
 	MountHandler(path string, fn http.Handler)
 }
 
-func MountRoutes(mux Mountable) {
+func Register(mux Mountable, db *sql.DB) {
+	todos := &todoHandler{db: db}
+
 	mux.MountFunc("/", indexHandler)
-	mux.MountFunc("/todos", todoHandler)
+	mux.MountHandler("/todos", todos)
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
