@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"log"
 	"encoding/json"
-	"github.com/nicksnyder/go-i18n/i18n"
 )
 
 type Todo struct {
@@ -25,7 +24,8 @@ func (t *todoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	T := getT(r)
 	_, err := authorize(r, t.db)
 	if err != nil {
-		log.Print(err)
+		w.WriteHeader(401)
+		w.Write([]byte(T(err.Error())))
 		return
 	}
 
@@ -48,10 +48,7 @@ func (t *todoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = w.Write(json)
-	if err != nil {
-		log.Print(err)
-	}
+	w.Write(json)
 }
 
 func scanTodos(rows *sql.Rows) (Todos, error) {

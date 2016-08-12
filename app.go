@@ -9,13 +9,14 @@ import (
 	"reactizer-go/server"
 	"reactizer-go/modules"
 	"reactizer-go/i18n"
+	"reactizer-go/config"
 )
 
 func main() {
-	i18n.LoadTranslations()
+	i18n.LoadTranslations(config.Locales)
 
 	server := server.NewServer()
-	db, err := sql.Open("postgres", "postgres://oreqizer@localhost/reactizer?sslmode=disable")
+	db, err := sql.Open("postgres", config.DBurl + "?sslmode=disable")
 	if err != nil {
 		log.Fatal(err)
 	}
