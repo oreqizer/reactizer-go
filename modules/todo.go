@@ -19,10 +19,10 @@ type Todos []*Todo
 
 type todoHandler struct {
 	db *sql.DB
-	T i18n.TranslateFunc
 }
 
 func (t *todoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	T := getT(r)
 	_, err := authorize(r, t.db)
 	if err != nil {
 		log.Print(err)

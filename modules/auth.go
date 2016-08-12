@@ -3,7 +3,6 @@ package modules
 import (
 	"database/sql"
 	"net/http"
-	"github.com/nicksnyder/go-i18n/i18n"
 )
 
 type AuthError string
@@ -12,11 +11,15 @@ func (e AuthError) Error() string {
 	return string(e)
 }
 
-func authorize(r *http.Request, db *sql.DB, T i18n.TranslateFunc) (int, error) {
+// 'authorize' checks the 'X-Authorization' header if it contains the JWT token required by some
+// queries. If the token is there, it is decoded into a user id and returned.
+//
+// In case of an error, translation id AuthError is returned.
+func authorize(r *http.Request, db *sql.DB) (string, error) {
 	// TODO make generic interface/struct for T
 	token := r.Header["X-Authorization"]
 	if len(token) != 1 {
-		return 0, AuthError(T("auth.no_auth_header"))
+		return "", AuthError("auth.no_auth_header")
 	}
-	return 0, nil
+	return "", nil
 }
