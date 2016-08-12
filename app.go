@@ -3,7 +3,9 @@ package main
 import (
 	"log"
 	"net/http"
+	"fmt"
 	"database/sql"
+
 	_ "github.com/lib/pq"
 
 	"reactizer-go/server"
@@ -15,14 +17,15 @@ import (
 func main() {
 	i18n.LoadTranslations(config.Locales)
 
-	server := server.NewServer()
+	box := server.NewServeBox()
 	db, err := sql.Open("postgres", config.DBurl + "?sslmode=disable")
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	defer db.Close()
+	modules.Register(box, db)
 
-	modules.Register(server, db)
-	log.Fatal(http.ListenAndServe(":8080", server.Mux))
+	port := fmt.Sprintf(":%d", config.Port)
+	log.Fatal(http.ListenAndServe(port, box.Mux))
 }

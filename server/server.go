@@ -5,20 +5,20 @@ import (
 	"net/http"
 )
 
-type Server struct {
+type ServeBox struct {
 	Mux *http.ServeMux
 }
 
-func (s *Server) MountFunc(path string, fn http.HandlerFunc) {
+func (s *ServeBox) HandleFunc(path string, fn http.HandlerFunc) {
 	s.Mux.HandleFunc(path, logger(fn))
 }
 
-func (s *Server) MountHandler(path string, handler http.Handler) {
-	s.MountFunc(path, handler.ServeHTTP)
+func (s *ServeBox) Handle(path string, handler http.Handler) {
+	s.HandleFunc(path, handler.ServeHTTP)
 }
 
-func NewServer() *Server {
-	return &Server{ Mux: http.NewServeMux() }
+func NewServeBox() *ServeBox {
+	return &ServeBox{ Mux: http.NewServeMux() }
 }
 
 func logger(fn http.HandlerFunc) http.HandlerFunc {

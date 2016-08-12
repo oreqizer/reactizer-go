@@ -5,17 +5,17 @@ import (
 	"database/sql"
 )
 
-type Mountable interface {
-	MountFunc(path string, fn http.HandlerFunc)
-	MountHandler(path string, fn http.Handler)
+type Handlable interface {
+	HandleFunc(path string, fn http.HandlerFunc)
+	Handle(path string, fn http.Handler)
 }
 
 // 'Register' readies the handlers and mounts all package's routes on a given multiplexor.
-func Register(mux Mountable, db *sql.DB) {
+func Register(mux Handlable, db *sql.DB) {
 	todos := &todoHandler{db: db}
 
-	mux.MountFunc("/", indexHandler)
-	mux.MountHandler("/todos", todos)
+	mux.HandleFunc("/", indexHandler)
+	mux.Handle("/todos", todos)
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {

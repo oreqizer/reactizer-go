@@ -15,11 +15,11 @@ func (e AuthError) Error() string {
 // queries. If the token is there, it is decoded into a user id and returned.
 //
 // In case of an error, translation id AuthError is returned.
-func authorize(r *http.Request, db *sql.DB) (string, error) {
-	// TODO make generic interface/struct for T
+func authorize(r *http.Request, db *sql.DB) (int, error) {
 	token := r.Header["X-Authorization"]
 	if len(token) != 1 {
-		return "", AuthError("auth.no_auth_header")
+		return 0, AuthError("auth.no_auth_header")
 	}
-	return "", nil
+	
+	return 0, nil
 }
