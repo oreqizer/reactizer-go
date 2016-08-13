@@ -42,10 +42,10 @@ func (u *register) Serve(c *iris.Context) {
 		return
 	}
 
-	res, err := u.db.Exec(`
+	err = u.db.QueryRow (`
 		INSERT INTO users (username, email, password)
 		VALUES ($1, $2, $3) RETURNING id
-		`, user.Username, user.Email, user.Password)
+		`, user.Username, user.Email, user.Password).Scan(&user.Id)
 	if err != nil {
 		log.Print(err)
 		return
