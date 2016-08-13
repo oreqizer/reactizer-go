@@ -13,8 +13,6 @@ type todo struct {
 	Done bool		`json:"done"`
 }
 
-type todos []*todo
-
 func Register(app *iris.Framework, db *sql.DB) {
 	app.Handle("GET", "/todos", &get{db})
 }
