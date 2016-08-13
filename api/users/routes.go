@@ -42,6 +42,7 @@ func (u *register) Serve(c *iris.Context) {
 		return
 	}
 
+	// TODO check
 	err = u.db.QueryRow (`
 		INSERT INTO users (username, email, password)
 		VALUES ($1, $2, $3) RETURNING id
