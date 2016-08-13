@@ -6,7 +6,7 @@ import "database/sql"
 func scanTodos(rows *sql.Rows) ([]Todo, error) {
 	todos := []Todo{}
 	for rows.Next() {
-		todo := &Todo{}
+		todo := Todo{}
 		err := rows.Scan(&todo.Id, &todo.UserId, &todo.Text, &todo.Done)
 		if err != nil {
 			return nil, err

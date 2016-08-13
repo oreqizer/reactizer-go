@@ -18,8 +18,7 @@ func (t *get) Serve(c *iris.Context) {
 	T := utils.GetT(c)
 	_, err := utils.Authorize(c, t.db)
 	if err != nil {
-		c.SetStatusCode(401)
-		c.Write(T(err.Error()))
+		c.Error(T(err.Error()), 401)
 		return
 	}
 

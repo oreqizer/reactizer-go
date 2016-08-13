@@ -14,5 +14,5 @@ type User struct {
 }
 
 func Register(app *iris.Framework, db *sql.DB) {
-
+	app.Handle("POST", "/users/register", &register{db})
 }

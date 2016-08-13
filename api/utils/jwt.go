@@ -30,4 +30,3 @@ func keyfunc(token *jwt.Token) (interface{}, error) {
 	}
 	return config.Secret, nil
 }
-

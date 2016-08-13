@@ -1,16 +1,19 @@
 package users
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
-type IdError error
+type IdError string
 
 func (e IdError) Error() string {
 	return string(e)
 }
 
 func checkUsername(username string, db *sql.DB) error {
-	row := db.QueryRow("SELECT id FROM users WHERE username = ?", username)
-	if err := row.Scan(); err == sql.ErrNoRows {
+	row := db.QueryRow("SELECT id FROM users WHERE username = $1", username)
+	var id int
+	if err := row.Scan(&id); err == sql.ErrNoRows {
 		return nil
 	} else if err != nil {
 		return err
@@ -19,11 +22,12 @@ func checkUsername(username string, db *sql.DB) error {
 }
 
 func checkEmail(email string, db *sql.DB) error {
-	row := db.QueryRow("SELECT id FROM users WHERE email = ?", email)
-	if err := row.Scan(); err == sql.ErrNoRows {
+	row := db.QueryRow("SELECT id FROM users WHERE email = $1", email)
+	var id int
+	if err := row.Scan(&id); err == sql.ErrNoRows {
 		return nil
 	} else if err != nil {
 		return err
 	}
-	return IdError("users.password_taken")
+	return IdError("users.email_taken")
 }
