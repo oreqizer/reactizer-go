@@ -1,9 +1,8 @@
-package modules
+package api
 
 import (
-	"net/http"
-
 	"github.com/nicksnyder/go-i18n/i18n"
+	"github.com/kataras/iris"
 
 	"reactizer-go/config"
 )
@@ -12,9 +11,9 @@ import (
 // Prority: 'X-Lang' > 'Accept-Language' > default language
 //
 // In case of an error, it returns i18n.IdentityTfunc().
-func getT(r *http.Request) i18n.TranslateFunc {
-	selectLang := r.Header.Get("X-Lang")
-	acceptLang := r.Header.Get("Accept-Language")
+func getT(c *iris.Context) i18n.TranslateFunc {
+	selectLang := c.RequestHeader("X-Lang")
+	acceptLang := c.RequestHeader("Accept-Language")
 	T, err := i18n.Tfunc(selectLang, acceptLang, config.DefaultLanguage)
 	if err != nil {
 		return i18n.IdentityTfunc()

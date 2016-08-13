@@ -2,14 +2,13 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"fmt"
 	"database/sql"
 
+	"github.com/kataras/iris"
 	_ "github.com/lib/pq"
 
-	"reactizer-go/server"
-	"reactizer-go/modules"
+	"reactizer-go/api"
 	"reactizer-go/i18n"
 	"reactizer-go/config"
 )
@@ -17,15 +16,15 @@ import (
 func main() {
 	i18n.LoadTranslations(config.Locales)
 
-	box := server.NewServeBox()
+	app := iris.New()
 	db, err := sql.Open("postgres", config.DBurl + "?sslmode=disable")
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	defer db.Close()
-	modules.Register(box, db)
+	api.Register(app, db)
 
 	port := fmt.Sprintf(":%d", config.Port)
-	log.Fatal(http.ListenAndServe(port, box.Mux))
+	app.Listen(port)
 }

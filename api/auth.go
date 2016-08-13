@@ -1,12 +1,12 @@
-package modules
+package api
 
 import (
 	"database/sql"
-	"net/http"
 	"fmt"
 	"log"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/kataras/iris"
 
 	"reactizer-go/config"
 )
@@ -21,12 +21,11 @@ func (e AuthError) Error() string {
 // queries. If the token is there, it is decoded into a user id and returned.
 //
 // In case of an error, translation id AuthError is returned.
-func authorize(r *http.Request, db *sql.DB) (int, error) {
-	data := r.Header["X-Authorization"]
-	if len(data) != 1 {
+func authorize(c *iris.Context, db *sql.DB) (int, error) {
+	token := c.RequestHeader("X-Authorization")
+	if token == "" {
 		return 0, AuthError("auth.no_auth_header")
 	}
-	token := data[0]
 
 	log.Print(decodeToken(token)) // TODO: create token
 	return 0, nil

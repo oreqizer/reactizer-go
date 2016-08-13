@@ -1,10 +1,11 @@
-package modules
+package api
 
 import (
-	"net/http"
 	"database/sql"
 	"log"
 	"encoding/json"
+
+	"github.com/kataras/iris"
 )
 
 type Todo struct {
@@ -16,16 +17,16 @@ type Todo struct {
 
 type Todos []*Todo
 
-type todoHandler struct {
+type todoGet struct {
 	db *sql.DB
 }
 
-func (t *todoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	T := getT(r)
-	_, err := authorize(r, t.db)
+func (t *todoGet) Serve(c *iris.Context) {
+	T := getT(c)
+	_, err := authorize(c, t.db)
 	if err != nil {
-		w.WriteHeader(401)
-		w.Write([]byte(T(err.Error())))
+		c.SetStatusCode(401)
+		c.Write(T(err.Error()))
 		return
 	}
 
@@ -42,13 +43,13 @@ func (t *todoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json, err := json.Marshal(todos)
+	data, err := json.Marshal(todos)
 	if err != nil {
 		log.Print(err)
 		return
 	}
 
-	w.Write(json)
+	c.Write(string(data))
 }
 
 func scanTodos(rows *sql.Rows) (Todos, error) {
