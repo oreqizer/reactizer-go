@@ -6,7 +6,7 @@ import (
 	"github.com/kataras/iris"
 )
 
-type todo struct {
+type Todo struct {
 	Id int			`json:"id"`
 	UserId int	`json:"-"`
 	Text string	`json:"text"`

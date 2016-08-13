@@ -2,13 +2,11 @@ package utils
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/kataras/iris"
-
-	"reactizer-go/config"
+	"unicode/utf8"
+	"regexp"
 )
 
 type AuthError string
@@ -31,24 +29,28 @@ func Authorize(c *iris.Context, db *sql.DB) (int, error) {
 	return 0, nil
 }
 
-func decodeToken(raw string) (int, error) {
-	token, err := jwt.Parse(raw, keyfunc)
-	if err != nil {
-		log.Print(err)
-		return 0, AuthError("auth.invalid_token")
+// 'CheckPassword' checks a given password's complexity.
+func CheckPassword(password string) error {
+	if utf8.RuneCountInString(password) < 8 {
+		return AuthError("auth.password_too_short")
 	}
-
-	if _, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-    //return claims["sub"].(int), nil
-    return 1, nil
+	if utf8.RuneCountInString(password) > 32 {
+		return AuthError("auth.password_too_long")
 	}
-
-	return 0, AuthError("auth.invalid_token")
-}
-
-func keyfunc(token *jwt.Token) (interface{}, error) {
-	if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-		return nil, fmt.Errorf("Unexpected method: %v", token.Header["alg"])
+	if match, err := regexp.MatchString(`\d`, password); err != nil {
+		return err
+	} else if !match {
+		return AuthError("auth.password_no_number")
 	}
-	return config.Secret, nil
+	if match, err := regexp.MatchString(`[A-Z]`, password); err != nil {
+		return err
+	} else if !match {
+		return AuthError("auth.password_no_upper")
+	}
+	if match, err := regexp.MatchString(`[a-z]`, password); err != nil {
+		return err
+	} else if !match {
+		return AuthError("auth.password_no_lower")
+	}
+	return nil
 }

@@ -1,12 +1,12 @@
 package users
 
-import (
-	"database/sql"
-	"unicode/utf8"
+import "database/sql"
 
-	"reactizer-go/api/utils"
-	"regexp"
-)
+type IdError error
+
+func (e IdError) Error() string {
+	return string(e)
+}
 
 func checkUsername(username string, db *sql.DB) error {
 	row := db.QueryRow("SELECT id FROM users WHERE username = ?", username)
@@ -15,37 +15,15 @@ func checkUsername(username string, db *sql.DB) error {
 	} else if err != nil {
 		return err
 	}
-
-	return ""
+	return IdError("users.username_taken")
 }
 
 func checkEmail(email string, db *sql.DB) error {
 	row := db.QueryRow("SELECT id FROM users WHERE email = ?", email)
 	if err := row.Scan(); err == sql.ErrNoRows {
-		return true, nil
+		return nil
 	} else if err != nil {
-		return false, err
-	}
-
-	return false, nil
-}
-
-func checkPassword(password string) error {
-	if utf8.RuneCountInString(password) < 8 {
-		return utils.AuthError("auth.password_too_short")
-	}
-	if utf8.RuneCountInString(password) > 32 {
-		return utils.AuthError("auth.password_too_long")
-	}
-	if match, err := regexp.MatchString(`\d`, password); err != nil {
 		return err
-	} else if !match {
-		return utils.AuthError("auth.password_no_number")
-	}// TODO
-	if match, err := regexp.MatchString(`\d`, password); !match || err != nil {
-		return utils.AuthError("auth.password_no_number")
 	}
-	if match, err := regexp.MatchString(`\d`, password); !match || err != nil {
-		return utils.AuthError("auth.password_no_number")
-	}
+	return IdError("users.password_taken")
 }
