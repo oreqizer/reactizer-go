@@ -1,4 +1,4 @@
-package api
+package utils
 
 import (
 	"database/sql"
@@ -17,11 +17,11 @@ func (e AuthError) Error() string {
 	return string(e)
 }
 
-// 'authorize' checks the 'X-Authorization' header if it contains the JWT token required by some
+// 'Authorize' checks the 'X-Authorization' header if it contains the JWT token required by some
 // queries. If the token is there, it is decoded into a user id and returned.
 //
 // In case of an error, translation id AuthError is returned.
-func authorize(c *iris.Context, db *sql.DB) (int, error) {
+func Authorize(c *iris.Context, db *sql.DB) (int, error) {
 	token := c.RequestHeader("X-Authorization")
 	if token == "" {
 		return 0, AuthError("auth.no_auth_header")

@@ -1,4 +1,4 @@
-package api
+package utils
 
 import (
 	"github.com/nicksnyder/go-i18n/i18n"
@@ -11,7 +11,7 @@ import (
 // Prority: 'X-Lang' > 'Accept-Language' > default language
 //
 // In case of an error, it returns i18n.IdentityTfunc().
-func getT(c *iris.Context) i18n.TranslateFunc {
+func GetT(c *iris.Context) i18n.TranslateFunc {
 	selectLang := c.RequestHeader("X-Lang")
 	acceptLang := c.RequestHeader("Accept-Language")
 	T, err := i18n.Tfunc(selectLang, acceptLang, config.DefaultLanguage)
