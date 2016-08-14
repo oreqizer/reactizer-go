@@ -22,7 +22,7 @@ type register struct {
 //
 // Errors:
 // "users.not_found"
-func (u *login) Serve(c *iris.Context) {
+func (r *login) Serve(c *iris.Context) {
 	T := utils.GetT(c)
 	candidate := &User{}
 	err := c.ReadJSON(candidate)
@@ -33,9 +33,9 @@ func (u *login) Serve(c *iris.Context) {
 
 	user := &User{}
 	user.Username = candidate.Username
-	err = u.db.QueryRow(`
+	err = r.db.QueryRow(`
 		SELECT id, password, email FROM users WHERE username = $1
-		`, candidate.Username).Scan(&user.Id, &user.Password, &user.Email)
+	`, candidate.Username).Scan(&user.Id, &user.Password, &user.Email)
 	if err == sql.ErrNoRows {
 		c.Error(T("users.not_found"), 404)
 		return
@@ -63,7 +63,7 @@ func (u *login) Serve(c *iris.Context) {
 
 // Creates a new user, checking his uniqueness and password strength.
 // Returns the user with his id and JWT token.
-func (u *register) Serve(c *iris.Context) {
+func (r *register) Serve(c *iris.Context) {
 	T := utils.GetT(c)
 	user := &User{}
 	err := c.ReadJSON(user)
@@ -72,12 +72,12 @@ func (u *register) Serve(c *iris.Context) {
 		return
 	}
 
-	err = checkUsername(user.Username, u.db)
+	err = checkUsername(user.Username, r.db)
 	if err != nil {
 		c.Error(T(err.Error()), 409)
 		return
 	}
-	err = checkEmail(user.Email, u.db)
+	err = checkEmail(user.Email, r.db)
 	if err != nil {
 		c.Error(T(err.Error()), 409)
 		return
@@ -94,10 +94,10 @@ func (u *register) Serve(c *iris.Context) {
 		return
 	}
 	user.Password = string(hash)
-	err = u.db.QueryRow (`
+	err = r.db.QueryRow (`
 		INSERT INTO users (username, email, password)
 		VALUES ($1, $2, $3) RETURNING id
-		`, user.Username, user.Email, user.Password).Scan(&user.Id)
+	`, user.Username, user.Email, user.Password).Scan(&user.Id)
 	if err != nil {
 		log.Print(err)
 		return

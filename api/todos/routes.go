@@ -10,11 +10,23 @@ import (
 	"reactizer-go/api/utils"
 )
 
-type get struct {
+type list struct {
 	db *sql.DB
 }
 
-func (t *get) Serve(c *iris.Context) {
+type create struct {
+	db *sql.DB
+}
+
+type edit struct {
+	db *sql.DB
+}
+
+type remove struct {
+	db *sql.DB
+}
+
+func (r *list) Serve(c *iris.Context) {
 	T := utils.GetT(c)
 	uid, err := utils.Authorize(c)
 	if err != nil {
@@ -22,7 +34,7 @@ func (t *get) Serve(c *iris.Context) {
 		return
 	}
 
-	rows, err := t.db.Query("SELECT * FROM todos WHERE user_id = $1", uid)
+	rows, err := r.db.Query("SELECT * FROM todos WHERE user_id=$1", uid)
 	if err != nil {
 		log.Print(err)
 		return
@@ -42,4 +54,104 @@ func (t *get) Serve(c *iris.Context) {
 	}
 
 	c.Write(string(data))
+}
+
+func (r *create) Serve(c *iris.Context) {
+	T := utils.GetT(c)
+	uid, err := utils.Authorize(c)
+	if err != nil {
+		c.Error(T(err.Error()), 401)
+		return
+	}
+
+	todo := &Todo{UserId: uid}
+	err = c.ReadJSON(todo)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	err = r.db.QueryRow(`
+		INSERT INTO todos (text, user_id, done)
+		VALUES ($1, $2, $3) RETURNING id
+	`, todo.Text, todo.UserId, false).Scan(&todo.Id)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+
+	c.JSON(200, todo)
+}
+
+// Errors:
+// "todos.not_found"
+func (r *edit) Serve(c *iris.Context) {
+	T := utils.GetT(c)
+	uid, err := utils.Authorize(c)
+	if err != nil {
+		c.Error(T(err.Error()), 401)
+		return
+	}
+
+	id, err := c.ParamInt("id")
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	todo := &Todo{Id: id, UserId: uid}
+	err = c.ReadJSON(todo)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	res, err := r.db.Exec(`
+		UPDATE todos SET text=$1, done=$2 WHERE id=$3 AND user_id=$4
+	`, todo.Text, todo.Done, todo.Id, todo.UserId)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	count, err := res.RowsAffected()
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	if count == 0 {
+		c.Error(T("todos.not_found"), 404)
+		return
+	}
+
+	c.JSON(200, todo)
+}
+
+// Errors:
+// "todos.not_found"
+func (r *remove) Serve(c *iris.Context) {
+	T := utils.GetT(c)
+	uid, err := utils.Authorize(c)
+	if err != nil {
+		c.Error(T(err.Error()), 401)
+		return
+	}
+
+	id, err := c.ParamInt("id")
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	res, err := r.db.Exec("DELETE FROM todos WHERE id=$1 AND user_id=$2", id, uid)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	count, err := res.RowsAffected()
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	if count == 0 {
+		c.Error(T("todos.not_found"), 404)
+		return
+	}
+
+	c.Text(200, "ok")
 }
