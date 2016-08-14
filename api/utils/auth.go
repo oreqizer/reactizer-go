@@ -3,10 +3,11 @@ package utils
 import (
 	"database/sql"
 	"log"
-
-	"github.com/kataras/iris"
 	"unicode/utf8"
 	"regexp"
+
+	"golang.org/x/crypto/bcrypt"
+	"github.com/kataras/iris"
 )
 
 type AuthError string
@@ -25,8 +26,25 @@ func Authorize(c *iris.Context, db *sql.DB) (int, error) {
 		return 0, AuthError("auth.no_auth_header")
 	}
 
-	log.Print(decodeToken(token)) // TODO: create token
+	log.Print(DecodeToken(token)) // TODO: create token
 	return 0, nil
+}
+
+func HashPassword(password []byte) ([]byte, error) {
+	hash, err := bcrypt.GenerateFromPassword(password, 14)
+	if err != nil {
+		return nil, err
+	}
+	return hash, nil
+}
+
+func VerifyPassword(password, hash []byte) error {
+	err := bcrypt.CompareHashAndPassword(hash, password)
+	if err != nil {
+		log.Print(err)
+		return AuthError("auth.invalid_password")
+	}
+	return nil
 }
 
 // 'CheckPassword' checks a given password's complexity.

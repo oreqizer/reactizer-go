@@ -3,13 +3,29 @@ package utils
 import (
 	"log"
 	"fmt"
+	"time"
 
 	"github.com/dgrijalva/jwt-go"
 
 	"reactizer-go/config"
 )
 
-func decodeToken(raw string) (int, error) {
+
+func GetToken(password string, uid int) (string, error) {
+	raw := jwt.NewWithClaims(jwt.SigningMethodRS384, jwt.MapClaims{
+    "sub": uid,
+    "iat": time.Now().Unix(),
+		"exp": time.Now().Add(time.Hour * 10).Unix(),
+	})
+
+	token, err := raw.SignedString(config.Secret)
+	if err != nil {
+		return "", err
+	}
+	return token
+}
+
+func DecodeToken(raw string) (int, error) {
 	token, err := jwt.Parse(raw, keyfunc)
 	if err != nil {
 		log.Print(err)

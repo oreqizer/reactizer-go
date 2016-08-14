@@ -42,7 +42,7 @@ func (u *register) Serve(c *iris.Context) {
 		return
 	}
 
-	// TODO check
+	// TODO hash password
 	err = u.db.QueryRow (`
 		INSERT INTO users (username, email, password)
 		VALUES ($1, $2, $3) RETURNING id
@@ -51,11 +51,7 @@ func (u *register) Serve(c *iris.Context) {
 		log.Print(err)
 		return
 	}
-	id, err := res.LastInsertId()
-	if err != nil {
-		log.Print(err)
-		return
-	}
-	user.Id = int(id)
+	// Don't send password to client
+	user.Password = ""
 	c.JSON(200, user)
 }
