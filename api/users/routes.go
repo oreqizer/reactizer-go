@@ -32,7 +32,9 @@ func (u *login) Serve(c *iris.Context) {
 
 	user := &User{}
 	user.Username = candidate.Username
-	row := u.db.QueryRow("SELECT id, password, email FROM users WHERE username = $1", candidate.Username)
+	row := u.db.QueryRow(`
+		SELECT id, password, email FROM users WHERE username = $1
+		`, candidate.Username)
 	if err = row.Scan(&user.Id, &user.Password, &user.Email); err == sql.ErrNoRows {
 		c.Error(T("users.not_found"), 404)
 		return
