@@ -17,7 +17,8 @@ type register struct {
 	db *sql.DB
 }
 
-// Searches for an user and checks his password. Returns the user with his id and JWT token.
+// Searches for an user and checks his password.
+// Returns the user with his id and JWT token.
 //
 // Errors:
 // "users.not_found"

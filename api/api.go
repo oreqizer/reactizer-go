@@ -11,7 +11,7 @@ import (
 
 // 'Register' readies the middleware and mounts all package's api on an iris instance.
 func Register(app *iris.Framework, db *sql.DB) {
-	// Apply middleware first!
+	// apply middleware first!
 	applyMiddleware(app)
 
 	app.Get("/", indexHandler)
