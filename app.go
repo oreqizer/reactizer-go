@@ -14,6 +14,7 @@ import (
 )
 
 func main() {
+	// TODO implement github.com/golang/glog
 	i18n.LoadTranslations(config.Locales)
 
 	app := iris.New()

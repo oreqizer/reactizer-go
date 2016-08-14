@@ -2,10 +2,10 @@ package todos
 
 import (
 	"database/sql"
-	"log"
 	"encoding/json"
 
 	"github.com/kataras/iris"
+	"github.com/golang/glog"
 
 	"reactizer-go/api/utils"
 )
@@ -36,20 +36,20 @@ func (r *list) Serve(c *iris.Context) {
 
 	rows, err := r.db.Query("SELECT * FROM todos WHERE user_id=$1", uid)
 	if err != nil {
-		log.Print(err)
+		glog.Error(err)
 		return
 	}
 	defer rows.Close()
 
 	todos, err := scanTodos(rows)
 	if err != nil {
-		log.Print(err)
+		glog.Error(err)
 		return
 	}
 
 	data, err := json.Marshal(todos)
 	if err != nil {
-		log.Print(err)
+		glog.Error(err)
 		return
 	}
 
@@ -67,7 +67,7 @@ func (r *create) Serve(c *iris.Context) {
 	todo := &Todo{UserId: uid}
 	err = c.ReadJSON(todo)
 	if err != nil {
-		log.Print(err)
+		glog.Error(err)
 		return
 	}
 	err = r.db.QueryRow(`
@@ -75,15 +75,13 @@ func (r *create) Serve(c *iris.Context) {
 		VALUES ($1, $2, $3) RETURNING id
 	`, todo.Text, todo.UserId, false).Scan(&todo.Id)
 	if err != nil {
-		log.Print(err)
+		glog.Error(err)
 		return
 	}
 
 	c.JSON(200, todo)
 }
 
-// Errors:
-// "todos.not_found"
 func (r *edit) Serve(c *iris.Context) {
 	T := utils.GetT(c)
 	uid, err := utils.Authorize(c)
@@ -94,37 +92,35 @@ func (r *edit) Serve(c *iris.Context) {
 
 	id, err := c.ParamInt("id")
 	if err != nil {
-		log.Print(err)
+		glog.Error(err)
 		return
 	}
 	todo := &Todo{Id: id, UserId: uid}
 	err = c.ReadJSON(todo)
 	if err != nil {
-		log.Print(err)
+		glog.Error(err)
 		return
 	}
 	res, err := r.db.Exec(`
 		UPDATE todos SET text=$1, done=$2 WHERE id=$3 AND user_id=$4
 	`, todo.Text, todo.Done, todo.Id, todo.UserId)
 	if err != nil {
-		log.Print(err)
+		glog.Error(err)
 		return
 	}
 	count, err := res.RowsAffected()
 	if err != nil {
-		log.Print(err)
+		glog.Error(err)
 		return
 	}
 	if count == 0 {
-		c.Error(T("todos.not_found"), 404)
+		c.Error(T(notFound), 404)
 		return
 	}
 
 	c.JSON(200, todo)
 }
 
-// Errors:
-// "todos.not_found"
 func (r *remove) Serve(c *iris.Context) {
 	T := utils.GetT(c)
 	uid, err := utils.Authorize(c)
@@ -135,21 +131,21 @@ func (r *remove) Serve(c *iris.Context) {
 
 	id, err := c.ParamInt("id")
 	if err != nil {
-		log.Print(err)
+		glog.Error(err)
 		return
 	}
 	res, err := r.db.Exec("DELETE FROM todos WHERE id=$1 AND user_id=$2", id, uid)
 	if err != nil {
-		log.Print(err)
+		glog.Error(err)
 		return
 	}
 	count, err := res.RowsAffected()
 	if err != nil {
-		log.Print(err)
+		glog.Error(err)
 		return
 	}
 	if count == 0 {
-		c.Error(T("todos.not_found"), 404)
+		c.Error(T(notFound), 404)
 		return
 	}
 

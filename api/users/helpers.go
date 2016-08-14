@@ -18,7 +18,7 @@ func checkUsername(username string, db *sql.DB) error {
 	} else if err != nil {
 		return err
 	}
-	return IdError("users.username_taken")
+	return IdError(usernameTaken)
 }
 
 func checkEmail(email string, db *sql.DB) error {
@@ -29,5 +29,5 @@ func checkEmail(email string, db *sql.DB) error {
 	} else if err != nil {
 		return err
 	}
-	return IdError("users.email_taken")
+	return IdError(emailTaken)
 }

@@ -1,11 +1,11 @@
 package utils
 
 import (
-	"log"
 	"fmt"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/golang/glog"
 
 	"reactizer-go/config"
 )
@@ -27,7 +27,7 @@ func GetToken(uid int) (string, error) {
 func DecodeToken(raw string) (int, error) {
 	token, err := jwt.Parse(raw, keyfunc)
 	if err != nil {
-		log.Print(err)
+		glog.Error(err)
 		return 0, AuthError("auth.invalid_token")
 	}
 

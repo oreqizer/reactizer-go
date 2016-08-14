@@ -2,9 +2,9 @@ package users
 
 import (
 	"database/sql"
-	"log"
 
 	"github.com/kataras/iris"
+	"github.com/golang/glog"
 
 	"reactizer-go/api/utils"
 )
@@ -19,15 +19,12 @@ type register struct {
 
 // Searches for an user and checks his password.
 // Returns the user with his id and JWT token.
-//
-// Errors:
-// "users.not_found"
 func (r *login) Serve(c *iris.Context) {
 	T := utils.GetT(c)
 	candidate := &User{}
 	err := c.ReadJSON(candidate)
 	if err != nil {
-		log.Print(err)
+		glog.Error(err)
 		return
 	}
 
@@ -37,11 +34,11 @@ func (r *login) Serve(c *iris.Context) {
 		SELECT id, password, email FROM users WHERE username = $1
 	`, candidate.Username).Scan(&user.Id, &user.Password, &user.Email)
 	if err == sql.ErrNoRows {
-		c.Error(T("users.not_found"), 404)
+		c.Error(T(notFound), 404)
 		return
 	}
 	if err != nil {
-		log.Print(err)
+		glog.Error(err)
 		return
 	}
 
@@ -52,7 +49,7 @@ func (r *login) Serve(c *iris.Context) {
 	}
 	user.Token, err = utils.GetToken(user.Id)
 	if err != nil {
-		log.Print(err)
+		glog.Error(err)
 		return
 	}
 
@@ -68,7 +65,7 @@ func (r *register) Serve(c *iris.Context) {
 	user := &User{}
 	err := c.ReadJSON(user)
 	if err != nil {
-		log.Print(err)
+		glog.Error(err)
 		return
 	}
 
@@ -90,7 +87,7 @@ func (r *register) Serve(c *iris.Context) {
 
 	hash, err := utils.HashPassword([]byte(user.Password))
 	if err != nil {
-		log.Print(err)
+		glog.Error(err)
 		return
 	}
 	user.Password = string(hash)
@@ -99,12 +96,12 @@ func (r *register) Serve(c *iris.Context) {
 		VALUES ($1, $2, $3) RETURNING id
 	`, user.Username, user.Email, user.Password).Scan(&user.Id)
 	if err != nil {
-		log.Print(err)
+		glog.Error(err)
 		return
 	}
 	user.Token, err = utils.GetToken(user.Id)
 	if err != nil {
-		log.Print(err)
+		glog.Error(err)
 		return
 	}
 

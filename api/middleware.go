@@ -1,9 +1,8 @@
 package api
 
 import (
-	"log"
-
 	"github.com/kataras/iris"
+	"github.com/golang/glog"
 )
 
 func applyMiddleware(api *iris.Framework) {
@@ -11,6 +10,6 @@ func applyMiddleware(api *iris.Framework) {
 }
 
 func logger(c *iris.Context) {
-	log.Print("[server] request recieved: ", c.PathString())
+	glog.Error("[server] request recieved: ", c.PathString())
 	c.Next()
 }
