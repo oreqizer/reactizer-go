@@ -12,5 +12,6 @@ var (
 )
 
 const (
+	CryptCost = 14
 	DefaultLanguage = "en-US"
 )

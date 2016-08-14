@@ -16,13 +16,13 @@ type get struct {
 
 func (t *get) Serve(c *iris.Context) {
 	T := utils.GetT(c)
-	_, err := utils.Authorize(c, t.db)
+	uid, err := utils.Authorize(c)
 	if err != nil {
 		c.Error(T(err.Error()), 401)
 		return
 	}
 
-	rows, err := t.db.Query("SELECT * FROM todos")
+	rows, err := t.db.Query("SELECT * FROM todos WHERE user_id = $1", uid)
 	if err != nil {
 		log.Print(err)
 		return

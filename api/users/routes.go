@@ -20,7 +20,7 @@ type register struct {
 // Searches for an user and checks his password. Returns the user with his id and JWT token.
 //
 // Errors:
-// - "users.not_found"
+// "users.not_found"
 func (u *login) Serve(c *iris.Context) {
 	T := utils.GetT(c)
 	candidate := &User{}

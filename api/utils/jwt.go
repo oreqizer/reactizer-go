@@ -10,7 +10,6 @@ import (
 	"reactizer-go/config"
 )
 
-
 func GetToken(uid int) (string, error) {
 	raw := jwt.NewWithClaims(jwt.SigningMethodHS384, jwt.MapClaims{
     "sub": uid,
@@ -33,7 +32,7 @@ func DecodeToken(raw string) (int, error) {
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-    return claims["sub"].(int), nil
+    return int(claims["sub"].(float64)), nil
 	}
 
 	return 0, AuthError("auth.invalid_token")
@@ -43,5 +42,5 @@ func keyfunc(token *jwt.Token) (interface{}, error) {
 	if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 		return nil, fmt.Errorf("Unexpected method: %v", token.Header["alg"])
 	}
-	return config.Secret, nil
+	return []byte(config.Secret), nil
 }
