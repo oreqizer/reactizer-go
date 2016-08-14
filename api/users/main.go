@@ -11,8 +11,10 @@ type User struct {
 	Username string		`json:"username"`
 	Email string			`json:"email"`
 	Password string		`json:"password,omitempty"`
+	Token string			`json:"token"`
 }
 
 func Register(app *iris.Framework, db *sql.DB) {
+	app.Handle("POST", "/users/login", &login{db})
 	app.Handle("POST", "/users/register", &register{db})
 }

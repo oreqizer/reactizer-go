@@ -11,18 +11,18 @@ import (
 )
 
 
-func GetToken(password string, uid int) (string, error) {
-	raw := jwt.NewWithClaims(jwt.SigningMethodRS384, jwt.MapClaims{
+func GetToken(uid int) (string, error) {
+	raw := jwt.NewWithClaims(jwt.SigningMethodHS384, jwt.MapClaims{
     "sub": uid,
     "iat": time.Now().Unix(),
 		"exp": time.Now().Add(time.Hour * 10).Unix(),
 	})
 
-	token, err := raw.SignedString(config.Secret)
+	token, err := raw.SignedString([]byte(config.Secret))
 	if err != nil {
 		return "", err
 	}
-	return token
+	return token, nil
 }
 
 func DecodeToken(raw string) (int, error) {
@@ -32,9 +32,8 @@ func DecodeToken(raw string) (int, error) {
 		return 0, AuthError("auth.invalid_token")
 	}
 
-	if _, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-    //return claims["sub"].(int), nil
-    return 1, nil
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+    return claims["sub"].(int), nil
 	}
 
 	return 0, AuthError("auth.invalid_token")

@@ -17,6 +17,42 @@ type register struct {
 	db *sql.DB
 }
 
+func (u *login) Serve(c *iris.Context) {
+	T := utils.GetT(c)
+	candidate := &User{}
+	err := c.ReadJSON(candidate)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+
+	user := &User{}
+	user.Username = candidate.Username
+	row := u.db.QueryRow("SELECT id, password, email FROM users WHERE username = $1", candidate.Username)
+	if err = row.Scan(&user.Id, &user.Password, &user.Email); err == sql.ErrNoRows {
+		c.Error(T("users.not_found"), 404)
+		return
+	} else if err != nil {
+		log.Print(err)
+		return
+	}
+
+	err = utils.VerifyPassword([]byte(candidate.Password), []byte(user.Password))
+	if err != nil {
+		c.Error(T(err.Error()), 401)
+		return
+	}
+	user.Token, err = utils.GetToken(user.Id)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+
+	// don't send password to the user
+	user.Password = ""
+	c.JSON(200, user)
+}
+
 func (u *register) Serve(c *iris.Context) {
 	T := utils.GetT(c)
 	user := &User{}
@@ -42,7 +78,12 @@ func (u *register) Serve(c *iris.Context) {
 		return
 	}
 
-	// TODO hash password
+	hash, err := utils.HashPassword([]byte(user.Password))
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	user.Password = string(hash)
 	err = u.db.QueryRow (`
 		INSERT INTO users (username, email, password)
 		VALUES ($1, $2, $3) RETURNING id
@@ -51,7 +92,13 @@ func (u *register) Serve(c *iris.Context) {
 		log.Print(err)
 		return
 	}
-	// Don't send password to client
+	user.Token, err = utils.GetToken(user.Id)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+
+	// don't send password to the user
 	user.Password = ""
 	c.JSON(200, user)
 }

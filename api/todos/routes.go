@@ -22,7 +22,7 @@ func (t *get) Serve(c *iris.Context) {
 		return
 	}
 
-	rows, err := t.db.Query("SELECT * FROM todo")
+	rows, err := t.db.Query("SELECT * FROM todos")
 	if err != nil {
 		log.Print(err)
 		return
