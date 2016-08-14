@@ -17,6 +17,10 @@ type register struct {
 	db *sql.DB
 }
 
+// Searches for an user and checks his password. Returns the user with his id and JWT token.
+//
+// Errors:
+// - "users.not_found"
 func (u *login) Serve(c *iris.Context) {
 	T := utils.GetT(c)
 	candidate := &User{}
@@ -53,6 +57,8 @@ func (u *login) Serve(c *iris.Context) {
 	c.JSON(200, user)
 }
 
+// Creates a new user, checking his uniqueness and password strength.
+// Returns the user with his id and JWT token.
 func (u *register) Serve(c *iris.Context) {
 	T := utils.GetT(c)
 	user := &User{}
