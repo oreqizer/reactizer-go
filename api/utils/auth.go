@@ -55,19 +55,13 @@ func CheckPassword(password string) error {
 	if utf8.RuneCountInString(password) > 32 {
 		return AuthError("auth.password_too_long")
 	}
-	if match, err := regexp.MatchString(`\d`, password); err != nil {
-		return err
-	} else if !match {
+	if match, _ := regexp.MatchString(`\d`, password); !match {
 		return AuthError("auth.password_no_number")
 	}
-	if match, err := regexp.MatchString(`[A-Z]`, password); err != nil {
-		return err
-	} else if !match {
+	if match, _ := regexp.MatchString(`[A-Z]`, password); !match {
 		return AuthError("auth.password_no_upper")
 	}
-	if match, err := regexp.MatchString(`[a-z]`, password); err != nil {
-		return err
-	} else if !match {
+	if match, _ := regexp.MatchString(`[a-z]`, password); !match {
 		return AuthError("auth.password_no_lower")
 	}
 	return nil
