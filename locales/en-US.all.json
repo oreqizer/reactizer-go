@@ -4,6 +4,10 @@
     "translation": "Invalid password"
   },
   {
+    "id": "auth.invalid_token",
+    "translation": "Invalid access token"
+  },
+  {
     "id": "auth.no_auth_header",
     "translation": "Unauthorized"
   },

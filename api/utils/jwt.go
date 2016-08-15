@@ -28,14 +28,14 @@ func DecodeToken(raw string) (int, error) {
 	token, err := jwt.Parse(raw, keyfunc)
 	if err != nil {
 		glog.Error(err)
-		return 0, AuthError("auth.invalid_token")
+		return 0, AuthError(invalidToken)
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
     return int(claims["sub"].(float64)), nil
 	}
 
-	return 0, AuthError("auth.invalid_token")
+	return 0, AuthError(invalidToken)
 }
 
 func keyfunc(token *jwt.Token) (interface{}, error) {
