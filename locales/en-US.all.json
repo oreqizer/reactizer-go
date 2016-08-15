@@ -1,6 +1,46 @@
 [
   {
+    "id": "auth.invalid_password",
+    "translation": "Invalid password"
+  },
+  {
     "id": "auth.no_auth_header",
     "translation": "Unauthorized"
+  },
+  {
+    "id": "auth.password_no_lower",
+    "translation": "Password needs at least one lowercase letter"
+  },
+  {
+    "id": "auth.password_no_number",
+    "translation": "Password needs at least one number"
+  },
+  {
+    "id": "auth.password_no_upper",
+    "translation": "Password needs at least one uppercase letter"
+  },
+  {
+    "id": "auth.password_too_long",
+    "translation": "Password too long"
+  },
+  {
+    "id": "auth.password_too_short",
+    "translation": "Password too short"
+  },
+  {
+    "id": "todos.not_found",
+    "translation": "No such todo"
+  },
+  {
+    "id": "users.email_taken",
+    "translation": "Email taken"
+  },
+  {
+    "id": "users.not_found",
+    "translation": "No such user"
+  },
+  {
+    "id": "users.username_taken",
+    "translation": "Username taken"
   }
 ]

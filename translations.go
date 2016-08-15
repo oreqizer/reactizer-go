@@ -72,7 +72,7 @@ func main() {
 		glog.Error(err)
 		return
 	}
-	err = ioutil.WriteFile("./locales/en-US.untranslated.json", data, os.ModePerm)
+	err = ioutil.WriteFile("./locales/_raw.untranslated.json", data, os.ModePerm)
 	if err != nil {
 		glog.Error(err)
 		return

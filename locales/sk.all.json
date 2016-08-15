@@ -1,6 +1,46 @@
 [
   {
+    "id": "auth.invalid_password",
+    "translation": "Nesprávne heslo"
+  },
+  {
     "id": "auth.no_auth_header",
     "translation": "Neautorizovaný prístup"
+  },
+  {
+    "id": "auth.password_no_lower",
+    "translation": "Heslo musí obsahovať aspoň jedno malé písmeno"
+  },
+  {
+    "id": "auth.password_no_number",
+    "translation": "Heslo musí obsahovať aspoň jedno číslo"
+  },
+  {
+    "id": "auth.password_no_upper",
+    "translation": "Heslo musí obsahovať aspoň jedno veľké písmeno"
+  },
+  {
+    "id": "auth.password_too_long",
+    "translation": "Heslo moc dlhé"
+  },
+  {
+    "id": "auth.password_too_short",
+    "translation": "Heslo moc krátke"
+  },
+  {
+    "id": "todos.not_found",
+    "translation": "Úloha neexistuje"
+  },
+  {
+    "id": "users.email_taken",
+    "translation": "Email je zabraný"
+  },
+  {
+    "id": "users.not_found",
+    "translation": "Užívateľ neexistuje"
+  },
+  {
+    "id": "users.username_taken",
+    "translation": "Užívaťeľské meno zabrané"
   }
 ]
