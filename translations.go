@@ -51,7 +51,7 @@ func fillMessages(m *Messages) func(string, os.FileInfo, error) error {
 			// remove redundant quotes
 			id := strings.Replace(string(t), "\"", "", -1)
 			// add to messages
-			m = append(*m, Message{Id: id})
+			*m = append(*m, Message{Id: id})
 		}
 		return nil
 	}
