@@ -35,7 +35,6 @@ func (m Messages) Swap(i, j int) {
 }
 
 func fillMessages(m *Messages) func(string, os.FileInfo, error) error {
-	msgs := m
 	return func (path string, f os.FileInfo, err error) error {
 		// only walk files named 'errors.go'
 		if f.IsDir() || !strings.HasSuffix(path, "/" + *files) {
@@ -52,7 +51,7 @@ func fillMessages(m *Messages) func(string, os.FileInfo, error) error {
 			// remove redundant quotes
 			id := strings.Replace(string(t), "\"", "", -1)
 			// add to messages
-			msgs = append(*msgs, Message{Id: id})
+			m = append(*m, Message{Id: id})
 		}
 		return nil
 	}
