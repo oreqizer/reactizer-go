@@ -12,8 +12,6 @@ import (
 	"log"
 )
 
-var output = flag.String("output", "message_ids.json", "Output file")
-var files = flag.String("files", "errors.go", "Files to search")
 
 type Message struct {
 	Id string						`json:"id"`
@@ -34,10 +32,10 @@ func (m Messages) Swap(i, j int) {
 	m[i], m[j] = m[j], m[i]
 }
 
-func fillMessages(m *Messages) func(string, os.FileInfo, error) error {
+func fillMessages(m *Messages, files string) func(string, os.FileInfo, error) error {
 	return func (path string, f os.FileInfo, err error) error {
 		// only walk files named 'errors.go'
-		if f.IsDir() || !strings.HasSuffix(path, "/" + *files) {
+		if f.IsDir() || !strings.HasSuffix(path, "/" + files) {
 			return nil
 		}
 		b, err := ioutil.ReadFile(path)
@@ -59,11 +57,13 @@ func fillMessages(m *Messages) func(string, os.FileInfo, error) error {
 
 func main() {
   flag.Parse()
+	output := flag.String("output", "message_ids.json", "Output file")
+	files := flag.String("files", "errors.go", "Files to search")
 	log.SetOutput(os.Stderr)
 
 	// search files
 	messages := &Messages{}
-  err := filepath.Walk(".", fillMessages(messages))
+  err := filepath.Walk(".", fillMessages(messages, *files))
 	if err != nil {
 		log.Print(err)
 		return
