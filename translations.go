@@ -9,9 +9,11 @@ import (
 	"strings"
 	"encoding/json"
 	"sort"
-
-	"github.com/golang/glog"
+	"log"
 )
+
+var output = flag.String("output", "message_ids.json", "Output file")
+var files = flag.String("files", "errors.go", "Files to search")
 
 type Message struct {
 	Id string						`json:"id"`
@@ -32,13 +34,11 @@ func (m Messages) Swap(i, j int) {
 	m[i], m[j] = m[j], m[i]
 }
 
-func main() {
-  flag.Parse()
-	messages := Messages{}
-	// visit function
-	visit := func (path string, f os.FileInfo, err error) error {
+func fillMessages(m *Messages) func(string, os.FileInfo, error) error {
+	msgs := m
+	return func (path string, f os.FileInfo, err error) error {
 		// only walk files named 'errors.go'
-		if f.IsDir() || strings.HasPrefix(path, ".") || !strings.HasSuffix(path, "/errors.go") {
+		if f.IsDir() || !strings.HasSuffix(path, "/" + *files) {
 			return nil
 		}
 		b, err := ioutil.ReadFile(path)
@@ -52,14 +52,21 @@ func main() {
 			// remove redundant quotes
 			id := strings.Replace(string(t), "\"", "", -1)
 			// add to messages
-			messages = append(messages, Message{Id: id})
+			msgs = append(*msgs, Message{Id: id})
 		}
 		return nil
 	}
+}
 
-  err := filepath.Walk(".", visit)
+func main() {
+  flag.Parse()
+	log.SetOutput(os.Stderr)
+
+	// search files
+	messages := &Messages{}
+  err := filepath.Walk(".", fillMessages(messages))
 	if err != nil {
-		glog.Error(err)
+		log.Print(err)
 		return
 	}
 
@@ -69,12 +76,12 @@ func main() {
 	// marshall & write JSON to file
 	data, err := json.MarshalIndent(messages, "", "  ")
 	if err != nil {
-		glog.Error(err)
+		log.Print(err)
 		return
 	}
-	err = ioutil.WriteFile("./locales/_raw.untranslated.json", data, os.ModePerm)
+	err = ioutil.WriteFile(*output, data, os.ModePerm)
 	if err != nil {
-		glog.Error(err)
+		log.Print(err)
 		return
 	}
 	return
