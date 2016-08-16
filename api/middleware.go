@@ -10,6 +10,6 @@ func applyMiddleware(api *iris.Framework) {
 }
 
 func logger(c *iris.Context) {
-	glog.Error("[server] request recieved: ", c.PathString())
+	glog.Error("Request recieved: ", c.PathString())
 	c.Next()
 }

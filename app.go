@@ -11,10 +11,11 @@ import (
 	"reactizer-go/api"
 	"reactizer-go/i18n"
 	"reactizer-go/config"
+	"flag"
 )
 
 func main() {
-	// TODO implement github.com/golang/glog
+	flag.Parse()
 	i18n.LoadTranslations(config.Locales)
 
 	app := iris.New()
