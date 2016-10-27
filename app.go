@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"fmt"
+	"flag"
 	"database/sql"
 
 	"github.com/kataras/iris"
@@ -11,7 +12,6 @@ import (
 	"reactizer-go/api"
 	"reactizer-go/i18n"
 	"reactizer-go/config"
-	"flag"
 )
 
 func main() {
