@@ -1,17 +1,17 @@
 package main
 
 import (
-	"log"
-	"fmt"
-	"flag"
 	"database/sql"
+	"flag"
+	"fmt"
+	"log"
 
 	"github.com/kataras/iris"
 	_ "github.com/lib/pq"
 
 	"reactizer-go/api"
-	"reactizer-go/i18n"
 	"reactizer-go/config"
+	"reactizer-go/i18n"
 )
 
 func main() {
@@ -19,7 +19,7 @@ func main() {
 	i18n.LoadTranslations(config.Locales)
 
 	app := iris.New()
-	db, err := sql.Open("postgres", config.DBurl + "?sslmode=disable")
+	db, err := sql.Open("postgres", config.DBurl+"?sslmode=disable")
 	if err != nil {
 		log.Fatal(err)
 	}

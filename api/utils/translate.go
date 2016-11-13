@@ -1,9 +1,9 @@
 package utils
 
 import (
-	"github.com/nicksnyder/go-i18n/i18n"
-	"github.com/kataras/iris"
 	"github.com/golang/glog"
+	"github.com/kataras/iris"
+	"github.com/nicksnyder/go-i18n/i18n"
 
 	"reactizer-go/config"
 )

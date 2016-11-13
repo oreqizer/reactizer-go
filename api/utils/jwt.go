@@ -12,8 +12,8 @@ import (
 
 func GetToken(uid int) (string, error) {
 	raw := jwt.NewWithClaims(jwt.SigningMethodHS384, jwt.MapClaims{
-    "sub": uid,
-    "iat": time.Now().Unix(),
+		"sub": uid,
+		"iat": time.Now().Unix(),
 		"exp": time.Now().Add(time.Hour * 10).Unix(),
 	})
 
@@ -32,7 +32,7 @@ func DecodeToken(raw string) (int, error) {
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-    return int(claims["sub"].(float64)), nil
+		return int(claims["sub"].(float64)), nil
 	}
 
 	return 0, AuthError(invalidToken)

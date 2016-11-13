@@ -1,8 +1,8 @@
 package api
 
 import (
-	"github.com/kataras/iris"
 	"github.com/golang/glog"
+	"github.com/kataras/iris"
 )
 
 func applyMiddleware(api *iris.Framework) {

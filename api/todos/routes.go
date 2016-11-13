@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"encoding/json"
 
-	"github.com/kataras/iris"
 	"github.com/golang/glog"
+	"github.com/kataras/iris"
 
 	"reactizer-go/api/utils"
 )

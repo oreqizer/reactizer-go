@@ -3,8 +3,8 @@ package users
 import (
 	"database/sql"
 
-	"github.com/kataras/iris"
 	"github.com/golang/glog"
+	"github.com/kataras/iris"
 
 	"reactizer-go/api/utils"
 )
@@ -91,7 +91,7 @@ func (r *register) Serve(c *iris.Context) {
 		return
 	}
 	user.Password = string(hash)
-	err = r.db.QueryRow (`
+	err = r.db.QueryRow(`
 		INSERT INTO users (username, email, password)
 		VALUES ($1, $2, $3) RETURNING id
 	`, user.Username, user.Email, user.Password).Scan(&user.Id)

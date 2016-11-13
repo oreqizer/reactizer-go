@@ -7,10 +7,10 @@ import (
 )
 
 type Todo struct {
-	Id int			`json:"id"`
-	UserId int	`json:"userId"`
-	Text string	`json:"text"`
-	Done bool		`json:"done"`
+	Id     int    `json:"id"`
+	UserId int    `json:"userId"`
+	Text   string `json:"text"`
+	Done   bool   `json:"done"`
 }
 
 func Register(app *iris.Framework, db *sql.DB) {

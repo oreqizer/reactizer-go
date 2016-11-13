@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/nicksnyder/go-i18n/i18n"
 	"github.com/golang/glog"
+	"github.com/nicksnyder/go-i18n/i18n"
 )
 
 func LoadTranslations(locales []string) {

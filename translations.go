@@ -1,21 +1,20 @@
 package main
 
 import (
-  "path/filepath"
-  "os"
-  "flag"
-	"io/ioutil"
-	"regexp"
-	"strings"
 	"encoding/json"
-	"sort"
+	"flag"
+	"io/ioutil"
 	"log"
+	"os"
+	"path/filepath"
+	"regexp"
+	"sort"
+	"strings"
 )
 
-
 type Message struct {
-	Id string						`json:"id"`
-	Translation string	`json:"translation"`
+	Id          string `json:"id"`
+	Translation string `json:"translation"`
 }
 
 type Messages []Message
@@ -33,9 +32,9 @@ func (m Messages) Swap(i, j int) {
 }
 
 func fillMessages(m *Messages, files string) func(string, os.FileInfo, error) error {
-	return func (path string, f os.FileInfo, err error) error {
+	return func(path string, f os.FileInfo, err error) error {
 		// only walk files named 'errors.go'
-		if f.IsDir() || !strings.HasSuffix(path, "/" + files) {
+		if f.IsDir() || !strings.HasSuffix(path, "/"+files) {
 			return nil
 		}
 		b, err := ioutil.ReadFile(path)
@@ -56,14 +55,14 @@ func fillMessages(m *Messages, files string) func(string, os.FileInfo, error) er
 }
 
 func main() {
-  flag.Parse()
+	flag.Parse()
 	output := flag.String("output", "message_ids.json", "Output file")
 	files := flag.String("files", "errors.go", "Files to search")
 	log.SetOutput(os.Stderr)
 
 	// search files
 	messages := &Messages{}
-  err := filepath.Walk(".", fillMessages(messages, *files))
+	err := filepath.Walk(".", fillMessages(messages, *files))
 	if err != nil {
 		log.Print(err)
 		return

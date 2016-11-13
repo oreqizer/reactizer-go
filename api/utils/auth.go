@@ -1,12 +1,12 @@
 package utils
 
 import (
-	"unicode/utf8"
 	"regexp"
+	"unicode/utf8"
 
-	"golang.org/x/crypto/bcrypt"
-	"github.com/kataras/iris"
 	"github.com/golang/glog"
+	"github.com/kataras/iris"
+	"golang.org/x/crypto/bcrypt"
 
 	"reactizer-go/config"
 )

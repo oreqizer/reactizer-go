@@ -7,11 +7,11 @@ import (
 )
 
 type User struct {
-	Id int						`json:"id"`
-	Username string		`json:"username"`
-	Email string			`json:"email"`
-	Password string		`json:"password,omitempty"`
-	Token string			`json:"token"`
+	Id       int    `json:"id"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password,omitempty"`
+	Token    string `json:"token"`
 }
 
 func Register(app *iris.Framework, db *sql.DB) {
