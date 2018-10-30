@@ -3,7 +3,7 @@ package users
 import (
 	"database/sql"
 
-	"github.com/golang/glog"
+	"github.com/kataras/golog"
 	"github.com/kataras/iris"
 
 	"reactizer-go/api/utils"
@@ -19,12 +19,11 @@ type register struct {
 
 // Searches for an user and checks his password.
 // Returns the user with his id and JWT token.
-func (r *login) Serve(c *iris.Context) {
-	T := utils.GetT(c)
+func (r *login) Serve(c iris.Context) {
 	candidate := &User{}
 	err := c.ReadJSON(candidate)
 	if err != nil {
-		glog.Error(err)
+		golog.Error(err)
 		return
 	}
 
@@ -34,60 +33,59 @@ func (r *login) Serve(c *iris.Context) {
 		SELECT id, password, email FROM users WHERE username = $1
 	`, candidate.Username).Scan(&user.Id, &user.Password, &user.Email)
 	if err == sql.ErrNoRows {
-		c.Error(T(notFound), 404)
+		utils.Error(c, notFound, 404)
 		return
 	}
 	if err != nil {
-		glog.Error(err)
+		golog.Error(err)
 		return
 	}
 
 	err = utils.VerifyPassword([]byte(candidate.Password), []byte(user.Password))
 	if err != nil {
-		c.Error(T(err.Error()), 401)
+		utils.Error(c, err.Error(), 401)
 		return
 	}
 	user.Token, err = utils.GetToken(user.Id)
 	if err != nil {
-		glog.Error(err)
+		golog.Error(err)
 		return
 	}
 
 	// don't send password to the user
 	user.Password = ""
-	c.JSON(200, user)
+	c.JSON(user)
 }
 
 // Creates a new user, checking his uniqueness and password strength.
 // Returns the user with his id and JWT token.
-func (r *register) Serve(c *iris.Context) {
-	T := utils.GetT(c)
+func (r *register) Serve(c iris.Context) {
 	user := &User{}
 	err := c.ReadJSON(user)
 	if err != nil {
-		glog.Error(err)
+		golog.Error(err)
 		return
 	}
 
 	err = checkUsername(user.Username, r.db)
 	if err != nil {
-		c.Error(T(err.Error()), 409)
+		utils.Error(c, err.Error(), 409)
 		return
 	}
 	err = checkEmail(user.Email, r.db)
 	if err != nil {
-		c.Error(T(err.Error()), 409)
+		utils.Error(c, err.Error(), 409)
 		return
 	}
 	err = utils.CheckPassword(user.Password)
 	if err != nil {
-		c.Error(T(err.Error()), 403)
+		utils.Error(c, err.Error(), 403)
 		return
 	}
 
 	hash, err := utils.HashPassword([]byte(user.Password))
 	if err != nil {
-		glog.Error(err)
+		golog.Error(err)
 		return
 	}
 	user.Password = string(hash)
@@ -96,16 +94,16 @@ func (r *register) Serve(c *iris.Context) {
 		VALUES ($1, $2, $3) RETURNING id
 	`, user.Username, user.Email, user.Password).Scan(&user.Id)
 	if err != nil {
-		glog.Error(err)
+		golog.Error(err)
 		return
 	}
 	user.Token, err = utils.GetToken(user.Id)
 	if err != nil {
-		glog.Error(err)
+		golog.Error(err)
 		return
 	}
 
 	// don't send password to the user
 	user.Password = ""
-	c.JSON(200, user)
+	c.JSON(user)
 }

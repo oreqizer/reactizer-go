@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/golang/glog"
+	"github.com/kataras/golog"
 	"github.com/nicksnyder/go-i18n/i18n"
 )
 
@@ -13,7 +13,7 @@ func LoadTranslations(locales []string) {
 		path, _ := filepath.Abs(fmt.Sprintf("locales/%s.all.json", lang))
 		err := i18n.LoadTranslationFile(path)
 		if err != nil {
-			glog.Error(err)
+			golog.Error(err)
 		}
 	}
 }

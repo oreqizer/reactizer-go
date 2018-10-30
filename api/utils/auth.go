@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"unicode/utf8"
 
-	"github.com/golang/glog"
+	"github.com/kataras/golog"
 	"github.com/kataras/iris"
 	"golang.org/x/crypto/bcrypt"
 
@@ -19,8 +19,8 @@ func (e AuthError) Error() string {
 
 // 'Authorize' checks the 'X-Authorization' header if it contains the JWT token required by some
 // queries. If the token is there, it is decoded into a user id and returned.
-func Authorize(c *iris.Context) (int, error) {
-	token := c.RequestHeader("X-Authorization")
+func Authorize(c iris.Context) (int, error) {
+	token := c.GetHeader("X-Authorization")
 	if token == "" {
 		return 0, AuthError(noAuthHeader)
 	}
@@ -45,7 +45,7 @@ func HashPassword(password []byte) ([]byte, error) {
 func VerifyPassword(password, hash []byte) error {
 	err := bcrypt.CompareHashAndPassword(hash, password)
 	if err != nil {
-		glog.Error(err)
+		golog.Error(err)
 		return AuthError(invalidPassword)
 	}
 	return nil

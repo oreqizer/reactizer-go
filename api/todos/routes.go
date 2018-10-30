@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 
-	"github.com/golang/glog"
+	"github.com/kataras/golog"
 	"github.com/kataras/iris"
 
 	"reactizer-go/api/utils"
@@ -26,48 +26,52 @@ type remove struct {
 	db *sql.DB
 }
 
-func (r *list) Serve(c *iris.Context) {
-	T := utils.GetT(c)
+// You can also do something like that if you have just one dependency:
+// func ListHandler(db *sql.DB) iris.Handler{
+// 	return func(c iris.Context){
+//		// [...]
+// 	}
+// }
+func (r *list) Serve(c iris.Context) {
 	uid, err := utils.Authorize(c)
 	if err != nil {
-		c.Error(T(err.Error()), 401)
+		utils.Error(c, err.Error(), 401)
 		return
 	}
 
 	rows, err := r.db.Query("SELECT * FROM todos WHERE user_id=$1", uid)
 	if err != nil {
-		glog.Error(err)
+		golog.Error(err)
 		return
 	}
 	defer rows.Close()
 
 	todos, err := scanTodos(rows)
 	if err != nil {
-		glog.Error(err)
+		golog.Error(err)
 		return
 	}
 
 	data, err := json.Marshal(todos)
 	if err != nil {
-		glog.Error(err)
+		golog.Error(err)
 		return
 	}
 
-	c.Write(string(data))
+	c.Write(data)
 }
 
-func (r *create) Serve(c *iris.Context) {
-	T := utils.GetT(c)
+func (r *create) Serve(c iris.Context) {
 	uid, err := utils.Authorize(c)
 	if err != nil {
-		c.Error(T(err.Error()), 401)
+		utils.Error(c, err.Error(), 401)
 		return
 	}
 
 	todo := &Todo{UserId: uid}
 	err = c.ReadJSON(todo)
 	if err != nil {
-		glog.Error(err)
+		golog.Error(err)
 		return
 	}
 	err = r.db.QueryRow(`
@@ -75,79 +79,78 @@ func (r *create) Serve(c *iris.Context) {
 		VALUES ($1, $2, $3) RETURNING id
 	`, todo.Text, todo.UserId, false).Scan(&todo.Id)
 	if err != nil {
-		glog.Error(err)
+		golog.Error(err)
 		return
 	}
 
-	c.JSON(200, todo)
+	c.JSON(todo)
 }
 
-func (r *edit) Serve(c *iris.Context) {
-	T := utils.GetT(c)
+func (r *edit) Serve(c iris.Context) {
 	uid, err := utils.Authorize(c)
 	if err != nil {
-		c.Error(T(err.Error()), 401)
+		utils.Error(c, err.Error(), 401)
 		return
 	}
 
-	id, err := c.ParamInt("id")
+	// uint64 and GetUint64 is better for IDs*
+	id, err := c.Params().GetInt("id")
 	if err != nil {
-		glog.Error(err)
+		golog.Error(err)
 		return
 	}
 	todo := &Todo{Id: id, UserId: uid}
 	err = c.ReadJSON(todo)
 	if err != nil {
-		glog.Error(err)
+		golog.Error(err)
 		return
 	}
 	res, err := r.db.Exec(`
 		UPDATE todos SET text=$1, done=$2 WHERE id=$3 AND user_id=$4
 	`, todo.Text, todo.Done, todo.Id, todo.UserId)
 	if err != nil {
-		glog.Error(err)
+		golog.Error(err)
 		return
 	}
 	count, err := res.RowsAffected()
 	if err != nil {
-		glog.Error(err)
+		golog.Error(err)
 		return
 	}
 	if count == 0 {
-		c.Error(T(notFound), 404)
+		utils.Error(c, notFound, 404)
 		return
 	}
 
-	c.JSON(200, todo)
+	c.JSON(todo)
 }
 
-func (r *remove) Serve(c *iris.Context) {
-	T := utils.GetT(c)
+func (r *remove) Serve(c iris.Context) {
 	uid, err := utils.Authorize(c)
 	if err != nil {
-		c.Error(T(err.Error()), 401)
+		utils.Error(c, err.Error(), 401)
 		return
 	}
 
-	id, err := c.ParamInt("id")
+	id, err := c.Params().GetInt("id")
 	if err != nil {
-		glog.Error(err)
+		golog.Error(err)
 		return
 	}
 	res, err := r.db.Exec("DELETE FROM todos WHERE id=$1 AND user_id=$2", id, uid)
 	if err != nil {
-		glog.Error(err)
+		golog.Error(err)
 		return
 	}
 	count, err := res.RowsAffected()
 	if err != nil {
-		glog.Error(err)
+		golog.Error(err)
 		return
 	}
 	if count == 0 {
-		c.Error(T(notFound), 404)
+		utils.Error(c, notFound, 404)
 		return
 	}
 
-	c.Text(200, "ok")
+	c.Text("ok")
 }

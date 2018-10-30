@@ -10,15 +10,15 @@ import (
 )
 
 // 'Register' readies the middleware and mounts all package's api on an iris instance.
-func Register(app *iris.Framework, db *sql.DB) {
+func Register(app *iris.Application, db *sql.DB) {
 	// apply middleware first!
 	applyMiddleware(app)
 
 	app.Get("/", indexHandler)
-	todos.Register(app, db)
-	users.Register(app, db)
+	todos.Register(app.Party("/todos"), db)
+	users.Register(app.Party("/users"), db)
 }
 
-func indexHandler(c *iris.Context) {
-	c.Write("This is an example server")
+func indexHandler(c iris.Context) {
+	c.WriteString("This is an example server\n")
 }

@@ -28,5 +28,5 @@ func main() {
 	api.Register(app, db)
 
 	port := fmt.Sprintf(":%d", config.Port)
-	app.Listen(port)
+	app.Run(iris.Addr(port))
 }
