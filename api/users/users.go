@@ -14,7 +14,12 @@ type User struct {
 	Token    string `json:"token"`
 }
 
-func Register(app *iris.Framework, db *sql.DB) {
-	app.Handle("POST", "/users/login", &login{db})
-	app.Handle("POST", "/users/register", &register{db})
+func Register(r iris.Party, db *sql.DB) {
+	var (
+		loginCtrl    = &login{db}
+		registerCtrl = &register{db}
+	)
+
+	r.Post("/login", loginCtrl.Serve)
+	r.Post("/register", registerCtrl.Serve)
 }

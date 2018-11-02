@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"github.com/golang/glog"
+	"github.com/kataras/golog"
 	"github.com/kataras/iris"
 	"github.com/nicksnyder/go-i18n/i18n"
 
@@ -12,12 +12,12 @@ import (
 // Prority: 'X-Lang' > 'Accept-Language' > default language
 //
 // In case of an error, it returns i18n.IdentityTfunc().
-func GetT(c *iris.Context) i18n.TranslateFunc {
-	selectLang := c.RequestHeader("X-Lang")
-	acceptLang := c.RequestHeader("Accept-Language")
+func GetT(c iris.Context) i18n.TranslateFunc {
+	selectLang := c.GetHeader("X-Lang")
+	acceptLang := c.GetHeader("Accept-Language")
 	T, err := i18n.Tfunc(selectLang, acceptLang, config.DefaultLanguage)
 	if err != nil {
-		glog.Error(err)
+		golog.Error(err)
 		return i18n.IdentityTfunc()
 	}
 	return T
