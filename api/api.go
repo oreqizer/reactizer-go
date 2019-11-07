@@ -3,7 +3,7 @@ package api
 import (
 	"database/sql"
 
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 
 	"reactizer-go/api/todos"
 	"reactizer-go/api/users"

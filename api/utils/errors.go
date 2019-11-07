@@ -1,6 +1,6 @@
 package utils
 
-import "github.com/kataras/iris"
+import "github.com/kataras/iris/v12"
 
 const (
 	noAuthHeader     = "auth.no_auth_header"
