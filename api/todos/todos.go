@@ -3,7 +3,7 @@ package todos
 import (
 	"database/sql"
 
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 )
 
 type Todo struct {

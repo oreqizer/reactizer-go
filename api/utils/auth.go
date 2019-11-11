@@ -5,7 +5,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/kataras/golog"
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 	"golang.org/x/crypto/bcrypt"
 
 	"reactizer-go/config"

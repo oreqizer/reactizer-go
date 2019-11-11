@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/kataras/iris"
-	_ "github.com/lib/pq"
-
 	"reactizer-go/api"
 	"reactizer-go/config"
 	"reactizer-go/i18n"
+
+	"github.com/kataras/iris/v12"
+	_ "github.com/lib/pq"
 )
 
 func main() {

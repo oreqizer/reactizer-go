@@ -2,9 +2,9 @@ package utils
 
 import (
 	"github.com/kataras/golog"
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
+	// Check https://github.com/iris-contrib/middleware/tree/master/go-i18n too.
 	"github.com/nicksnyder/go-i18n/i18n"
-
 	"reactizer-go/config"
 )
 
